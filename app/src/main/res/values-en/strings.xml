@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Download Time Calculator</string>
+    <string name="intro">This application is to calculate download speed based on the size of the input file.</string>
+    <string name="file_size_type">File Type Size</string>
+    <string name="file_size">File Size</string>
+    <string name="download_Speed">Download Speed</string>
+    <string name="input_invalid">Cant Empty</string>
+    <string name="bagikan_template">File Size : %1$s\n Download Speed : %2$s\nDownload Estimate : %3$s</string>
+    <string name="bagikan">Share</string>
+    <string name="hasil">Download Estimate : %1$s</string>
+    <string name="hitung">Calculate</string>
+    <string name="tentang_aplikasi">About App</string>
+    <string name="kembali">Back</string>
+    <string name="copyright">Download Time Calculator is an application to calculate the estimated download of a file that can help users to estimate when a file download is complete \n\nThis application is made for the Programming for Mobile Devices 1 Assessment.\n\nCopyright © 2024–2025 Rafi Hidayat. All rights reserved.</string>
+</resources>

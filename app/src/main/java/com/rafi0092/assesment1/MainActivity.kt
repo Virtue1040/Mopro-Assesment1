@@ -1,10 +1,11 @@
 package com.rafi0092.assesment1
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,8 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -25,6 +24,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,13 +36,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -125,7 +125,7 @@ fun ErrorHint(isError: Boolean) {
 }
 
 @Composable
-fun ScreenContent(modifier: Modifier, navController: NavHostController) {
+fun ScreenContent(modifier: Modifier) {
     val choiceUkuranFile = listOf(
         "bytes (B)",
         "kilobytes (KB)",
@@ -143,16 +143,18 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
         "terabits (Tb)",
     )
 
-    var ukuranFile by remember { mutableStateOf("") }
-    var kecepatanInternet by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    var ukuranFile by rememberSaveable { mutableStateOf("") }
+    var kecepatanInternet by rememberSaveable { mutableStateOf("") }
 
     var ukuranFileError by rememberSaveable { mutableStateOf(false) }
     var kecepatanInternetError by rememberSaveable { mutableStateOf(false) }
 
-    var satuanUkuranFile by remember { mutableStateOf(choiceUkuranFile[0]) }
-    var satuanKecepatanInternet by remember { mutableStateOf(choiceUkuranFile[0]) }
+    var satuanUkuranFile by rememberSaveable { mutableStateOf(choiceUkuranFile[0]) }
+    var satuanKecepatanInternet by rememberSaveable { mutableStateOf(choiceUkuranFile[0]) }
 
-    var hasil by remember { mutableFloatStateOf(0f) }
+    var hasil by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
@@ -224,6 +226,7 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
                 if (kecepatanInternetError || ukuranFileError) return@Button
 
                 hasil = HitungEstimasi(choiceUkuranFile.indexOf(satuanUkuranFile), ukuranFile.toFloat(), choiceUkuranFile.indexOf(satuanKecepatanInternet), kecepatanInternet.toFloat())
+                println(hasil)
             },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
@@ -233,13 +236,43 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
             )
         }
 
-        if (hasil > 0) {
+        if (hasil != "") {
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp
+            )
             Text(
                 text = stringResource(R.string.hasil, hasil),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.fillMaxWidth()
             )
+            var ukuranFileShare = ukuranFile + " " + satuanUkuranFile.substringAfter("(").substringBefore(")")
+            var kecepatanInternetShare = kecepatanInternet + " " + satuanKecepatanInternet.substringAfter("(").substringBefore(")")
+            Button(
+                onClick = {
+                    shareData(
+                        context = context,
+                        message = context.getString(R.string.bagikan_template, ukuranFileShare, kecepatanInternetShare, hasil)
+                    )
+                },
+                modifier = Modifier.padding(top = 8.dp),
+                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.bagikan)
+                )
+            }
         }
+    }
+}
+
+private fun shareData(context: Context, message: String) {
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_TEXT, message)
+    }
+    if (shareIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(shareIntent)
     }
 }
 
@@ -288,16 +321,23 @@ fun Dropdown(satuan : String, onValueChange : (String) -> Unit = {}, choiceUkura
     }
 }
 
-fun HitungEstimasi(satuanUkuranFile: Number, ukuranFile : Number, satuanKecepatanInternet: Number, kecepatanInternet: Number ): Float {
-    val ukuranFileInByte = ukuranFile.toFloat() * Math.pow(1024.0, satuanUkuranFile.toDouble()).toFloat()
-    val kecepatanInternetInByte = kecepatanInternet.toFloat() * Math.pow(1024.0, satuanKecepatanInternet.toDouble()).toFloat()
 
-    return ukuranFileInByte / kecepatanInternetInByte
+fun HitungEstimasi(satuanUkuranFile: Number, ukuranFile : Float, satuanKecepatanInternet: Number, kecepatanInternet: Float): String {
+    val ukuranFileInByte = ukuranFile * Math.pow(1024.0, satuanUkuranFile.toDouble()).toFloat()
+    val kecepatanInternetInByte = kecepatanInternet * Math.pow(1024.0, satuanKecepatanInternet.toDouble()).toFloat()
+
+    val totalDetik = ukuranFileInByte / kecepatanInternetInByte
+    val hari = (totalDetik / 86400).toInt()
+    val jam = (totalDetik % 86400 / 3600).toInt()
+    val menit = ((totalDetik % 86400) % 3600 / 60).toInt()
+    val detik = (((totalDetik % 86400) % 3600) % 60).toInt()
+
+    return String.format("%d Hari %d Jam %d Menit %d Detik", hari, jam, menit, detik)
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainActivityPreview() {
     Assesment1Theme {
         SetupNavGraph(rememberNavController())
     }

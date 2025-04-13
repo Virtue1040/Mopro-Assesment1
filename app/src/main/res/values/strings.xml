@@ -1,14 +1,15 @@
 <resources>
-    <string name="app_name">Internet Calculator</string>
+    <string name="app_name">Download Time Calculator</string>
     <string name="intro">Aplikasi ini adalah untuk menghitung kecepatan download berdasarkan ukuran file yang diinput</string>
     <string name="file_size_type">Tipe Ukuran File</string>
     <string name="file_size">Ukuran File</string>
-    <string name="download_Speed">Download Speed</string>
+    <string name="download_Speed">Kecepatan Download</string>
     <string name="input_invalid">Tidak boleh kosong.</string>
-    <string name="hasil">Estimasi : %1$d Hari %2$d Jam %3$d Detik</string>
+    <string name="bagikan_template">Ukuran File : %1$s\n Kecepatan Download : %2$s\nEstimasi Download : %3$s</string>
+    <string name="bagikan">Bagikan</string>
+    <string name="hasil">Estimasi Download : %1$s</string>
     <string name="hitung">Hitung</string>
-    <string name="tentang_aplikasi"></string>
-    <string name="kembali"></string>
-    <string name="copyright"></string>
-
+    <string name="tentang_aplikasi">Tentang Aplikasi</string>
+    <string name="kembali">Kembali</string>
+    <string name="copyright">Download Time Calculator adalah aplikasi untuk menghitung estimasi download dari sebuah file yang dapat membantu pengguna untuk memperkirakan kapan download sebuah file selesai\n\nAplikasi ini dibuat untuk kelas Pemrograman untuk Perangkat Bergerak 1 Assesment 1.\n\nCopyright © 2024–2025 Rafi Hidayat. \nAll rights reserved.</string>
 </resources>
