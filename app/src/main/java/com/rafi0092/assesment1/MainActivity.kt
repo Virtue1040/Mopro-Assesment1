@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -123,7 +127,7 @@ fun ErrorHint(isError: Boolean) {
 @Composable
 fun ScreenContent(modifier: Modifier, navController: NavHostController) {
     val choiceUkuranFile = listOf(
-        "bytes (B)" ,
+        "bytes (B)",
         "kilobytes (KB)",
         "megabytes (MB)",
         "gigabytes (GB)",
@@ -148,6 +152,8 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
     var satuanUkuranFile by remember { mutableStateOf(choiceUkuranFile[0]) }
     var satuanKecepatanInternet by remember { mutableStateOf(choiceUkuranFile[0]) }
 
+    var hasil by remember { mutableFloatStateOf(0f) }
+
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -161,7 +167,7 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
 
         Dropdown(satuanUkuranFile, {
             satuanUkuranFile = it
-        })
+        }, choiceUkuranFile)
 
         OutlinedTextField(
             value = ukuranFile,
@@ -187,7 +193,7 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
 
         Dropdown(satuanKecepatanInternet, {
             satuanKecepatanInternet = it
-        })
+        }, choiceUkuranFile)
 
         OutlinedTextField(
             value = kecepatanInternet,
@@ -210,33 +216,58 @@ fun ScreenContent(modifier: Modifier, navController: NavHostController) {
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Button(
+            onClick = {
+                ukuranFileError = (ukuranFile == "" || ukuranFile == "0")
+                kecepatanInternetError = (kecepatanInternet == "" || kecepatanInternet == "0")
+                if (kecepatanInternetError || ukuranFileError) return@Button
+
+                hasil = HitungEstimasi(choiceUkuranFile.indexOf(satuanUkuranFile), ukuranFile.toFloat(), choiceUkuranFile.indexOf(satuanKecepatanInternet), kecepatanInternet.toFloat())
+            },
+            modifier = Modifier.padding(top = 8.dp),
+            contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.hitung)
+            )
+        }
+
+        if (hasil > 0) {
+            Text(
+                text = stringResource(R.string.hasil, hasil),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dropdown(satuanUkuranFile : String, onValueChange : (String) -> Unit = {}, choiceUkuranFile : List<String> = listOf()) {
-
+fun Dropdown(satuan : String, onValueChange : (String) -> Unit = {}, choiceUkuranFile : List<String> = listOf()) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { },
+        onExpandedChange = { expanded = !expanded },
         modifier = Modifier.fillMaxWidth()
     ) {
-        TextField(
-            value = satuanUkuranFile,
-            onValueChange = { },
-            label = { stringResource(R.string.file_size_type) },
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = true,
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            },
-        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextField(
+                modifier = Modifier.menuAnchor().fillMaxWidth(),
+                value = satuan,
+                onValueChange = { },
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+            )
+        }
+
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
@@ -244,7 +275,8 @@ fun Dropdown(satuanUkuranFile : String, onValueChange : (String) -> Unit = {}, c
         ) {
             choiceUkuranFile.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option) },
+                    modifier = Modifier.fillMaxWidth(),
+                    text = { Text(option) },
                     onClick = {
                         onValueChange(option)
                         expanded = false
@@ -254,6 +286,13 @@ fun Dropdown(satuanUkuranFile : String, onValueChange : (String) -> Unit = {}, c
             }
         }
     }
+}
+
+fun HitungEstimasi(satuanUkuranFile: Number, ukuranFile : Number, satuanKecepatanInternet: Number, kecepatanInternet: Number ): Float {
+    val ukuranFileInByte = ukuranFile.toFloat() * Math.pow(1024.0, satuanUkuranFile.toDouble()).toFloat()
+    val kecepatanInternetInByte = kecepatanInternet.toFloat() * Math.pow(1024.0, satuanKecepatanInternet.toDouble()).toFloat()
+
+    return ukuranFileInByte / kecepatanInternetInByte
 }
 
 @Preview(showBackground = true)

@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">Internet Calculator</string>
-    <string name="intro">Download Time Calculator</string>
-    <string name="file_size_type">File Type Size</string>
-    <string name="file_size">File Size</string>
+    <string name="intro">Aplikasi ini adalah untuk menghitung kecepatan download berdasarkan ukuran file yang diinput</string>
+    <string name="file_size_type">Tipe Ukuran File</string>
+    <string name="file_size">Ukuran File</string>
     <string name="download_Speed">Download Speed</string>
     <string name="input_invalid">Tidak boleh kosong.</string>
+    <string name="hasil">Estimasi : %1$d Hari %2$d Jam %3$d Detik</string>
+    <string name="hitung">Hitung</string>
     <string name="tentang_aplikasi"></string>
     <string name="kembali"></string>
     <string name="copyright"></string>
