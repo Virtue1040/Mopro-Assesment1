@@ -4,7 +4,7 @@
     <string name="file_size_type">Tipe Ukuran File</string>
     <string name="file_size">Ukuran File</string>
     <string name="download_Speed">Kecepatan Download</string>
-    <string name="input_invalid">Tidak boleh kosong.</string>
+    <string name="input_invalid">Input tidak valid</string>
     <string name="bagikan_template">Ukuran File : %1$s\n Kecepatan Download : %2$s\nEstimasi Download : %3$s</string>
     <string name="bagikan">Bagikan</string>
     <string name="hasil">Estimasi Download : %1$s</string>

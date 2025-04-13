@@ -5,7 +5,7 @@
     <string name="file_size_type">File Type Size</string>
     <string name="file_size">File Size</string>
     <string name="download_Speed">Download Speed</string>
-    <string name="input_invalid">Cant Empty</string>
+    <string name="input_invalid">Input tidak valid</string>
     <string name="bagikan_template">File Size : %1$s\n Download Speed : %2$s\nDownload Estimate : %3$s</string>
     <string name="bagikan">Share</string>
     <string name="hasil">Download Estimate : %1$s</string>

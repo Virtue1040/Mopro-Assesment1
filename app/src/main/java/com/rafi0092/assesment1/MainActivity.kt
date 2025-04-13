@@ -2,6 +2,7 @@ package com.rafi0092.assesment1
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -107,7 +108,7 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun IconPicker(isError: Boolean, unit: String) {
     if (isError) {
-        Icon(imageVector = Icons.Filled.Warning, contentDescription = null)
+        Icon(imageVector = Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
     } else {
         Text(
             text = unit
@@ -116,11 +117,12 @@ fun IconPicker(isError: Boolean, unit: String) {
 }
 
 @Composable
-fun ErrorHint(isError: Boolean) {
+fun ErrorHint(isError: Boolean, errorCode : Number = 0) {
     if (isError) {
         Text(
             text = stringResource(R.string.input_invalid)
         )
+
     }
 }
 
@@ -179,12 +181,14 @@ fun ScreenContent(modifier: Modifier) {
                     text = stringResource(R.string.file_size)
                 )
             },
+            isError = ukuranFileError,
             trailingIcon = {
                 IconPicker(ukuranFileError, satuanUkuranFile.substringAfter("(").substringBefore(")") )
             },
             supportingText = {
                 ErrorHint(ukuranFileError)
             },
+
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -205,6 +209,7 @@ fun ScreenContent(modifier: Modifier) {
                     text = stringResource(R.string.download_Speed)
                 )
             },
+            isError = kecepatanInternetError,
             trailingIcon = {
                 IconPicker(kecepatanInternetError, satuanKecepatanInternet.substringAfter("(").substringBefore(")"))
             },
@@ -218,15 +223,14 @@ fun ScreenContent(modifier: Modifier) {
             ),
             modifier = Modifier.fillMaxWidth()
         )
-
+        val pattern = remember { Regex("^\\d+\$") }
         Button(
             onClick = {
-                ukuranFileError = (ukuranFile == "" || ukuranFile == "0")
-                kecepatanInternetError = (kecepatanInternet == "" || kecepatanInternet == "0")
+                ukuranFileError = (ukuranFile == "" || !ukuranFile.matches(pattern))
+                kecepatanInternetError = (kecepatanInternet == "" || !kecepatanInternet.matches(pattern))
                 if (kecepatanInternetError || ukuranFileError) return@Button
 
                 hasil = HitungEstimasi(choiceUkuranFile.indexOf(satuanUkuranFile), ukuranFile.toFloat(), choiceUkuranFile.indexOf(satuanKecepatanInternet), kecepatanInternet.toFloat())
-                println(hasil)
             },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
@@ -265,6 +269,7 @@ fun ScreenContent(modifier: Modifier) {
         }
     }
 }
+
 
 private fun shareData(context: Context, message: String) {
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
