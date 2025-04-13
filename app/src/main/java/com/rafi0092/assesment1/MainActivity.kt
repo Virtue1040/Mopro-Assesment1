@@ -1,8 +1,8 @@
 package com.rafi0092.assesment1
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rafi0092.assesment1.navigation.Screen
 import com.rafi0092.assesment1.navigation.SetupNavGraph
 import com.rafi0092.assesment1.ui.theme.Assesment1Theme
+import kotlin.math.pow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -230,7 +231,7 @@ fun ScreenContent(modifier: Modifier) {
                 kecepatanInternetError = (kecepatanInternet == "" || !kecepatanInternet.matches(pattern))
                 if (kecepatanInternetError || ukuranFileError) return@Button
 
-                hasil = HitungEstimasi(choiceUkuranFile.indexOf(satuanUkuranFile), ukuranFile.toFloat(), choiceUkuranFile.indexOf(satuanKecepatanInternet), kecepatanInternet.toFloat())
+                hasil = hitungEstimasi(choiceUkuranFile.indexOf(satuanUkuranFile), ukuranFile.toFloat(), choiceUkuranFile.indexOf(satuanKecepatanInternet), kecepatanInternet.toFloat())
             },
             modifier = Modifier.padding(top = 8.dp),
             contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
@@ -250,8 +251,8 @@ fun ScreenContent(modifier: Modifier) {
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.fillMaxWidth()
             )
-            var ukuranFileShare = ukuranFile + " " + satuanUkuranFile.substringAfter("(").substringBefore(")")
-            var kecepatanInternetShare = kecepatanInternet + " " + satuanKecepatanInternet.substringAfter("(").substringBefore(")")
+            val ukuranFileShare = ukuranFile + " " + satuanUkuranFile.substringAfter("(").substringBefore(")")
+            val kecepatanInternetShare = kecepatanInternet + " " + satuanKecepatanInternet.substringAfter("(").substringBefore(")")
             Button(
                 onClick = {
                     shareData(
@@ -327,9 +328,11 @@ fun Dropdown(satuan : String, onValueChange : (String) -> Unit = {}, choiceUkura
 }
 
 
-fun HitungEstimasi(satuanUkuranFile: Number, ukuranFile : Float, satuanKecepatanInternet: Number, kecepatanInternet: Float): String {
-    val ukuranFileInByte = ukuranFile * Math.pow(1024.0, satuanUkuranFile.toDouble()).toFloat()
-    val kecepatanInternetInByte = kecepatanInternet * Math.pow(1024.0, satuanKecepatanInternet.toDouble()).toFloat()
+@SuppressLint("DefaultLocale")
+fun hitungEstimasi(satuanUkuranFile: Number, ukuranFile : Float, satuanKecepatanInternet: Number, kecepatanInternet: Float): String {
+    val ukuranFileInByte = ukuranFile * 1024.0.pow(satuanUkuranFile.toDouble()).toFloat()
+    val kecepatanInternetInByte = kecepatanInternet * 1024.0.pow(satuanKecepatanInternet.toDouble())
+        .toFloat()
 
     val totalDetik = ukuranFileInByte / kecepatanInternetInByte
     val hari = (totalDetik / 86400).toInt()
