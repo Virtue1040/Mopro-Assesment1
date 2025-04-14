@@ -100,7 +100,7 @@ fun MainScreen(navController: NavHostController) {
             )
         },
     ) { padding ->
-        ScreenContent(Modifier.padding(padding), navController)
+        ScreenContent(Modifier.padding(padding))
     }
 }
 

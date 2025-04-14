@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -66,12 +67,11 @@ fun AboutScreen(navController: NavController) {
         }
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            modifier = Modifier.padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Image(
-                painter = painterResource(id = R.drawable.Interneticon),
+                painter = painterResource(id = R.drawable.interneticon),
                 contentDescription = "logoInternet",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(132.dp)
